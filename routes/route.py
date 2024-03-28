@@ -61,7 +61,7 @@ async def send_message(new_chat_message: LogsModel):
         {"_id": ObjectId(id)},
         {"$push": {"logs": dict(ai_chat_message)}}
     )
-    return response["output"]
+    return ai_chat_message
 
 
     

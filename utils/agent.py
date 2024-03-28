@@ -40,7 +40,6 @@ class Agent:
             chain_type="stuff",
             retriever=self.vector_search.as_retriever(search_kwargs={'k': 3})
         )
-        print(self.qa)
     def initializing_agent(self):
         tools = self.get_all_tools()
         agent = initialize_agent(
