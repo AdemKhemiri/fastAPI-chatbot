@@ -1,13 +1,20 @@
+import asyncio
+from typing import AsyncIterable
 from langchain_openai import ChatOpenAI
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.chains import RetrievalQA
 from langchain_openai import OpenAIEmbeddings
 from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain.agents import initialize_agent
+from langchain.callbacks import AsyncIteratorCallbackHandler
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from config.database import db_rag
 from langchain.agents import Tool, load_tools
 from utils.tools.mongo_id_tool import GetIds
 from utils.tools.influxdb_tool import GetInfluxData
+from utils.tools.async_callback_handler import AsyncCallbackHandler, CallbackHandler
+from langchain.callbacks.streaming_stdout_final_only import FinalStreamingStdOutCallbackHandler
+
 import os
 
 from dotenv import load_dotenv
@@ -26,7 +33,9 @@ class Agent:
         self.llm = ChatOpenAI(
             openai_api_key=openai_api_key,
             model_name='gpt-3.5-turbo',
-            temperature=0.0
+            temperature=0.0,
+            streaming=True,
+            callbacks=[AsyncIteratorCallbackHandler()]
         )
 
         self.conversational_memory = ConversationBufferWindowMemory(
@@ -40,6 +49,7 @@ class Agent:
             chain_type="stuff",
             retriever=self.vector_search.as_retriever(search_kwargs={'k': 3})
         )
+        self.agent = self.initializing_agent()
     def initializing_agent(self):
         tools = self.get_all_tools()
         agent = initialize_agent(
@@ -50,7 +60,8 @@ class Agent:
                 max_iterations=5,
                 early_stopping_method='generate',
                 memory=self.conversational_memory,
-                handle_parsing_errors=True
+                handle_parsing_errors=True,
+                return_intermediate_steps=False
             )
         return agent
     
@@ -76,12 +87,16 @@ class Agent:
     def ClearMemory(self):
         self.conversational_memory.memory.clear() 
 
+    async def run_call(self, query: str, stream_it: AsyncCallbackHandler):
+        self.agent.agent.llm_chain.llm.callbacks = [stream_it]
+        response = await self.agent.acall(inputs={"input":query})
+        return response
 
-
-
-
-
-
+    async def create_gen(self, query: str, stream_it: AsyncCallbackHandler) -> AsyncIterable[str]:
+        task = asyncio.create_task(self.run_call(query, stream_it))
+        async for token in stream_it.aiter():
+            yield token
+        await task
 
 
 

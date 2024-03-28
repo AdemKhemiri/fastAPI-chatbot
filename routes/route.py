@@ -1,18 +1,22 @@
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 from models.logs_model import LogsModel
 from config.database import db_chat
 from schema.schemas import list_serial
 from bson import ObjectId
+from langchain.callbacks.streaming_aiter import AsyncIteratorCallbackHandler
+
 from utils.agent import Agent
 from datetime import date
 from pydantic import BaseModel
 from datetime import datetime
 
+from utils.tools.async_callback_handler import AsyncCallbackHandler
 import json
 router = APIRouter()
 print("LOADING THE AGENT...")
 agent = Agent()
-agent = agent.initializing_agent()
+# agent = agent.initializing_agent()
 print("AGENT LOADED SUCCESSFULLY!")
 
 
@@ -51,22 +55,20 @@ async def send_message(new_chat_message: LogsModel):
             {"$push": {"logs": dict(new_chat_message)}}
         )
     # print("---------------------------")
-    response = agent(new_chat_message.message)
-    ai_chat_message = {
-        "senderId": 9,
-        "message": str(response["output"]),
-        "timestamp": datetime.utcnow()
-    }
-    db_chat.find_one_and_update(
-        {"_id": ObjectId(id)},
-        {"$push": {"logs": dict(ai_chat_message)}}
-    )
-    return ai_chat_message
+    gen = agent.create_gen(new_chat_message.message, AsyncCallbackHandler())
+    # ai_chat_message = {
+    #     "senderId": 9,
+    #     "message": str(response["output"]),
+    #     "timestamp": datetime.utcnow()
+    # }
+    # db_chat.find_one_and_update(
+    #     {"_id": ObjectId(id)},
+    #     {"$push": {"logs": dict(ai_chat_message)}}
+    # )
+    return StreamingResponse(gen)
 
 
-    
-    
-    
+
 # PUT REQUEST METHOD
 @router.put("/{id}")
 async def update_logs(id: str, new_chat_log):
