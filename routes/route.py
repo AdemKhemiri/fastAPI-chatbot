@@ -8,6 +8,7 @@ from datetime import date
 from pydantic import BaseModel
 from datetime import datetime
 
+import asyncio
 import json
 router = APIRouter()
 print("LOADING THE AGENT...")
@@ -52,10 +53,13 @@ async def send_message(new_chat_message: LogsModel):
         )
     # print("---------------------------")
 
-    response = get_ai_response(new_chat_message, session_id="")
+
+    # response = await get_ai_response(new_chat_message, session_id="")
+    response = await asyncio.gather(get_ai_response(new_chat_message, session_id=""))
+    print(response[0]["output"])
     ai_chat_message = {
         "senderId": 9,
-        "message": str(response["output"]),
+        "message": str(response[0]["output"]),
         "timestamp": datetime.utcnow()
     }
     db_chat.find_one_and_update(
@@ -64,10 +68,10 @@ async def send_message(new_chat_message: LogsModel):
     )
     return ai_chat_message
 
-def get_ai_response(new_chat_message: LogsModel, session_id: str):
+async def get_ai_response(new_chat_message: LogsModel, session_id: str):
     memory = agent_init.get_agent_memory_session_id(session_id=str(new_chat_message.senderId))
     agent.memory = memory
-    reply = agent.invoke(new_chat_message.message)
+    reply = await agent.ainvoke(new_chat_message.message)
     return reply
     
     
