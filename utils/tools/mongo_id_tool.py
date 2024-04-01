@@ -29,5 +29,5 @@ class GetIds(BaseTool):
         ids = [doc["_id"] for doc in result]
         return ids
 
-    def _arun(self, radius: Union[int, float]):
+    def _arun(self, in_content):
         raise NotImplementedError("This tool does not support async")

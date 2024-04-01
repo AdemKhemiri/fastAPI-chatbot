@@ -9,13 +9,15 @@ from langchain.agents import Tool, load_tools
 from utils.tools.mongo_id_tool import GetIds
 from utils.tools.influxdb_tool import GetInfluxData
 import os
+from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory, BaseChatMessageHistory
 
 from dotenv import load_dotenv
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
+MONGODB_TOKEN = os.getenv("MONGODB_TOKEN")
 class Agent:
+
     def __init__(self, db_rag=db_rag, openai_api_key=OPENAI_API_KEY):
         self.vector_search = MongoDBAtlasVectorSearch(
             db_rag,
@@ -28,10 +30,16 @@ class Agent:
             model_name='gpt-3.5-turbo',
             temperature=0.0
         )
-
+        self.mongo_history = MongoDBChatMessageHistory(
+            connection_string=MONGODB_TOKEN,
+            session_id="id_aaaaaaaaaaa",
+            database_name="mydb",
+            collection_name="chat_histories"
+        )
         self.conversational_memory = ConversationBufferWindowMemory(
+            chat_memory = self.mongo_history,
             memory_key='chat_history',
-            k=5,
+            k=10,
             return_messages=True
         )
         # retrieval qa chain
@@ -41,6 +49,7 @@ class Agent:
             retriever=self.vector_search.as_retriever(search_kwargs={'k': 3})
         )
     def initializing_agent(self):
+        # self.mongoMemoryChatHistory()
         tools = self.get_all_tools()
         agent = initialize_agent(
                 agent="chat-conversational-react-description",
@@ -72,12 +81,25 @@ class Agent:
         tools.append(GetInfluxData())
         return tools
         
-        
-    def ClearMemory(self):
+
+    def Clear_memory(self):
         self.conversational_memory.memory.clear() 
 
 
-
+    def get_agent_memory_session_id(self, session_id):
+        self.mongo_history = MongoDBChatMessageHistory(
+            connection_string=MONGODB_TOKEN,
+            session_id=session_id,
+            database_name = "mydb",
+            collection_name = "chat_histories"
+        )
+        self.conversational_memory = ConversationBufferWindowMemory(
+            chat_memory=self.mongo_history,
+            memory_key='chat_history',
+            k=10,
+            return_messages=True
+        )
+        return self.conversational_memory
 
 
 

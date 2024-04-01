@@ -11,8 +11,8 @@ from datetime import datetime
 import json
 router = APIRouter()
 print("LOADING THE AGENT...")
-agent = Agent()
-agent = agent.initializing_agent()
+agent_init = Agent()
+agent = agent_init.initializing_agent()
 print("AGENT LOADED SUCCESSFULLY!")
 
 
@@ -51,7 +51,8 @@ async def send_message(new_chat_message: LogsModel):
             {"$push": {"logs": dict(new_chat_message)}}
         )
     # print("---------------------------")
-    response = agent(new_chat_message.message)
+
+    response = get_ai_response(new_chat_message, session_id="")
     ai_chat_message = {
         "senderId": 9,
         "message": str(response["output"]),
@@ -63,8 +64,11 @@ async def send_message(new_chat_message: LogsModel):
     )
     return ai_chat_message
 
-
-    
+def get_ai_response(new_chat_message: LogsModel, session_id: str):
+    memory = agent_init.get_agent_memory_session_id(session_id=str(new_chat_message.senderId))
+    agent.memory = memory
+    reply = agent.invoke(new_chat_message.message)
+    return reply
     
     
 # PUT REQUEST METHOD
