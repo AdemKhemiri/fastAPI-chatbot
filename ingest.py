@@ -1,18 +1,21 @@
-from langchain.document_loaders import WebBaseLoader
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain_openai import OpenAIEmbeddings
 
 from config.database import db_rag
 
+# Step 0: delete everything in mongo db
+#db_rag.delete_many({})
+
 # Step 1: Load
 loaders = [
- PyPDFLoader("ResumeWorded.pdf"),
- WebBaseLoader("https://en.wikipedia.org/wiki/AT%26T"),
- WebBaseLoader("https://en.wikipedia.org/wiki/Bank_of_America"),
- PyPDFLoader("A_Compelling_Global_Resource.pdf"),
- PyPDFLoader("guidebook_for_energy_efficiency_evaluation_measurement_verification.pdf"),
+    PyPDFLoader("rag_data/CV_Adam_Khemiri.pdf"),
+    PyPDFLoader("rag_data/best-practises-for-industrial-ee-web.pdf"),
+    PyPDFLoader("rag_data/Electrical Installation Guide 2018.pdf"),
+    PyPDFLoader("rag_data/Solutions de filtrage pour l'amélioration de l'efficacité énergétique.pdf"),
+    PyPDFLoader("rag_data/ISO_500001_EN.pdf"),
+    PyPDFLoader("rag_data/Household Appliances and Their Power Consumption.pdf"),
 ]
 
 data = []

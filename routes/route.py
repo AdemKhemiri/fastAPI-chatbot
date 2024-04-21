@@ -5,12 +5,13 @@ from schema.schemas import list_serial
 from bson import ObjectId
 from utils.agent import Agent
 from datetime import date
-from pydantic import BaseModel
 from datetime import datetime
 
 import asyncio
 import json
-router = APIRouter()
+router = APIRouter(
+    prefix="/chatbot"
+)
 print("LOADING THE AGENT...")
 agent_init = Agent()
 agent = agent_init.initializing_agent()
@@ -82,3 +83,4 @@ async def update_logs(id: str, new_chat_log):
         {"_id": ObjectId(id)},
         {"$push": {"logs": json.loads(new_chat_log)}}
     )
+

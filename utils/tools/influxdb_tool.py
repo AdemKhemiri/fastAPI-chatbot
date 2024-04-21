@@ -13,7 +13,7 @@ desc = (
     "['influx_query']."
     # "id: you get it from 'Get Id from DB' action/tool"
     "You have to generate a snippet code of query according to the user input to get 'influx_query'"
-    "Execute the query you generated and get the neccessary informations"
+    "Execute the query you generated and get the necessary information"
     "the bucket of influxdb is called 'energy-ds'"
     "format the date accordingly if necessary"
     "use this example to get the energy"
