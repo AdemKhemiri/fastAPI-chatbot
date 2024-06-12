@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-# from routes.route import router
-from routes.devices_form import api
+from routes.route import router
 from fastapi.middleware.cors import CORSMiddleware
 
 import uvicorn
@@ -19,8 +18,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# app.include_router(router)
-app.include_router(api)
+app.include_router(router)
 
 
 if __name__ == "__main__":

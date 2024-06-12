@@ -9,6 +9,7 @@ from datetime import datetime
 
 import asyncio
 import json
+
 router = APIRouter(
     prefix="/chatbot"
 )
@@ -18,14 +19,12 @@ agent = agent_init.initializing_agent()
 print("AGENT LOADED SUCCESSFULLY!")
 
 
-
 # GET REQUEST METHOD
 @router.get("/get-all-chat")
 async def get_chat_logs():
     chat = list_serial(db_chat.find())
 
     return chat
-
 
 
 # POST REQUEST METHOD
@@ -53,14 +52,14 @@ async def send_message(new_chat_message: LogsModel):
             {"$push": {"logs": dict(new_chat_message)}}
         )
     # print("---------------------------")
-
-
-    # response = await get_ai_response(new_chat_message, session_id="")
-    response = await asyncio.gather(get_ai_response(new_chat_message, session_id=""))
-    print(response[0]["output"])
+    response = agent.invoke(new_chat_message.message)
+    # response = agent.invoke({"input": new_chat_message.message},
+    #                         config={"configurable": {"session_id": "143"}},)
+    # response = await asyncio.gather(get_ai_response(new_chat_message, session_id=""))
+    print(response["output"])
     ai_chat_message = {
         "senderId": 9,
-        "message": str(response[0]["output"]),
+        "message": str(response["output"]),
         "timestamp": datetime.utcnow()
     }
     db_chat.find_one_and_update(
@@ -69,13 +68,14 @@ async def send_message(new_chat_message: LogsModel):
     )
     return ai_chat_message
 
+
 async def get_ai_response(new_chat_message: LogsModel, session_id: str):
     memory = agent_init.get_agent_memory_session_id(session_id=str(new_chat_message.senderId))
     agent.memory = memory
     reply = await agent.ainvoke(new_chat_message.message)
     return reply
-    
-    
+
+
 # PUT REQUEST METHOD
 @router.put("/{id}")
 async def update_logs(id: str, new_chat_log):
@@ -83,4 +83,3 @@ async def update_logs(id: str, new_chat_log):
         {"_id": ObjectId(id)},
         {"$push": {"logs": json.loads(new_chat_log)}}
     )
-
