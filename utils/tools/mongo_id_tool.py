@@ -7,7 +7,8 @@ from config.database import db_rag
 
 desc = (
     "You can't use 'Get access to InfluxDB' tool without using this tool"
-    "use this tool when you need to get an ID or couple IDs from database"
+    "use this tool ONLY when you need to get an ID from database and when asked about the energy consummed by the device"
+    "Don't use this tool all the time"
     "To use the tool you MUST provide a parameters"
     "['in_content']."
     "This parameter should be the name so it can be a one, or 2 or 3 words"

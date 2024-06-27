@@ -52,7 +52,8 @@ async def send_message(new_chat_message: LogsModel):
             {"$push": {"logs": dict(new_chat_message)}}
         )
     # print("---------------------------")
-    response = agent.invoke(new_chat_message.message)
+    # response = agent.invoke(new_chat_message.message)
+    response = agent.invoke({"input": new_chat_message.message})
     # response = agent.invoke({"input": new_chat_message.message},
     #                         config={"configurable": {"session_id": "143"}},)
     # response = await asyncio.gather(get_ai_response(new_chat_message, session_id=""))

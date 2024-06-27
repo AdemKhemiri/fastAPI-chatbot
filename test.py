@@ -2,11 +2,11 @@ import json
 
 import requests
 
-url = "http://localhost:8000/send-msg"
+url = "http://localhost:8000/chatbot/send-msg"
 
 data = {
     "senderId": 11,
-    "message": "now add 2 to that",
+    "message": "hello there",
     "timestamp": "2024-03-28T13:49:34.755Z"
 }
 

@@ -9,7 +9,7 @@ desc = (
     "Whenever the user asks about the energy consumption, abide to the following policy:"
     "1. You ALWAYS need to get the id returned from the 'Get Ids from MongoDB' tool"
     "2. Use the influxdb code snipped provided as a query to retrieve the data for the user "
-    "3. make sure to update the id and dates according to the prompt inputted."
+    "3. MAKE SURE to update the 'id' and dates according to the prompt inputted."
     "4. To use the tool you MUST provide parameters ['influx_query']."
     "5. Execute the query you generated and get the necessary information."
     "6. Format the value (in kWh) nicely with commas for the user for ease of readability\n"
@@ -22,7 +22,7 @@ desc = (
         location = timezone.fixed(offset: 0h)
         from(bucket: "energy-ds")
         |> range(start: 2023-06-11T23:00:00.000Z, stop: 2023-06-12T23:00:00.000Z)
-        |> filter(fn: (r) => r["_measurement"] == "id")
+        |> filter(fn: (r) => r["_measurement"] == "<insert id from 'Get Ids from MongoDB' tool here>")
         |> filter(fn: (r) => r["_field"] == "Eit")
         |> sum()
         |> sort(columns: ["_time"], desc: false)
