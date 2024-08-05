@@ -206,8 +206,8 @@ class Agent:
         )
         tools.append(Calculator())
         # tools.append(knowledge_tool)
-        tools.append(GetIds())
-        tools.append(GetInfluxData())
+        # tools.append(GetIds())
+        # tools.append(GetInfluxData())
         return tools
 
     def Clear_memory(self):
