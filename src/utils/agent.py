@@ -134,7 +134,7 @@ class Agent:
         #     temperature=0.0
         # )
         self.model = LLMModel()
-        self.llm_pipe = self.model.initialize_LLM("mistralai/Mistral-7B-Instruct-v0.3")
+        self.llm_pipe = self.model.initialize_LLM(llm_name="mistralai/Mistral-7B-Instruct-v0.3")
 
         self.mongo_history = MongoDBChatMessageHistory(
             connection_string=MONGODB_TOKEN,

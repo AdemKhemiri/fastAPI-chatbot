@@ -15,7 +15,7 @@ torch.set_default_device('cuda')
 class LLMModel:
     def __init__(self):
         pass
-    def initialize_LLM(llm_name="mistralai/Mistral-7B-Instruct-v0.3"):
+    def initialize_LLM(self, llm_name="mistralai/Mistral-7B-Instruct-v0.3"):
 
         # use the commented out parts for running in 4bit
         quantization_config = BitsAndBytesConfig(load_in_4bit=True)
@@ -48,7 +48,7 @@ class LLMModel:
         return pipe
 
 
-    def wrap_text(text, width=90): #preserve_newlines
+    def wrap_text(self, text, width=90): #preserve_newlines
         # Split the input text into lines based on newline characters
         lines = text.split('\n')
         # Wrap each line individually
@@ -57,7 +57,7 @@ class LLMModel:
         wrapped_text = '\n'.join(wrapped_lines)
         return wrapped_text
 
-    async def generate(input_text, system_prompt="",max_length=512, pipe=None):
+    async def generate(self, input_text, system_prompt="",max_length=512, pipe=None):
         if system_prompt != "":
             system_prompt = system_prompt
         else:
@@ -93,5 +93,5 @@ class LLMModel:
 
         generated_outputs = outputs[0]["generated_text"]
         text = outputs[0]["generated_text"][len(prompt):]
-        wrapped_text = wrap_text(text)
+        wrapped_text = self.wrap_text(text)
         return wrapped_text
