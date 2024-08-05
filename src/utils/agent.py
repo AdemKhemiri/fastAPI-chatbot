@@ -133,7 +133,8 @@ class Agent:
         #     model_name='gpt-3.5-turbo',
         #     temperature=0.0
         # )
-        self.llm_pipe = LLMModel().initialize_LLM("mistralai/Mistral-7B-Instruct-v0.3")
+        self.model = LLMModel()
+        self.llm_pipe = self.model.initialize_LLM("mistralai/Mistral-7B-Instruct-v0.3")
 
         self.mongo_history = MongoDBChatMessageHistory(
             connection_string=MONGODB_TOKEN,

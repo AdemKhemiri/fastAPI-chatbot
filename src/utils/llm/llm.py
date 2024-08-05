@@ -14,7 +14,7 @@ torch.set_default_device('cuda')
 
 class LLMModel:
     def __init__(self):
-        return self
+        pass
     def initialize_LLM(llm_name="mistralai/Mistral-7B-Instruct-v0.3"):
 
         # use the commented out parts for running in 4bit
