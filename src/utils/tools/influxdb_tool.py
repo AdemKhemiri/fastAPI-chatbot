@@ -32,11 +32,10 @@ desc = (
 
 class GetInfluxData(BaseTool):
     name: str = "Get access to InfluxDB"
-    description = desc
-
-    token = os.environ.get("INFLUXDB_TOKEN")
-    uri = "http://localhost:8086"
-    bucket = "energy-ds"
+    description: str = desc
+    token: str = os.environ.get("INFLUXDB_TOKEN")
+    uri: str = "http://localhost:8086"
+    bucket: str = "energy-ds"
     org: str = "Orbit"
     def _run(self, influx_query):
 
@@ -53,20 +52,4 @@ class GetInfluxData(BaseTool):
         return value
 
     def _arun(self, influx_query):
-        token = os.environ.get("INFLUXDB_TOKEN")
-        uri = "http://localhost:8086"
-        bucket = "energy-ds"
-        org = "Orbit"
-
-        # Initialize the client
-        client = InfluxDBClient(url=uri, token=token, org=org)
-        tables = client.query_api().query(influx_query, org=org)
-        value = "0"
-        # Process the results
-        for table in tables:
-            for record in table.records:
-                # if value != "0": break
-                print(record["_value"])
-                value = record["_value"]
-                print(value)
-        return value
+        pass

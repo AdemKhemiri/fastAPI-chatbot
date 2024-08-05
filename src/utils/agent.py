@@ -8,7 +8,7 @@ from config.database import db_rag
 from langchain.agents import Tool
 from utils.llm.llm import LLMModel
 from utils.tools.mongo_id_tool import GetIds
-from utils.tools.influxdb_tool import GetInfluxData
+# from utils.tools.influxdb_tool import GetInfluxData
 from utils.tools.Calculator import Calculator
 import os
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
